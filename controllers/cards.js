@@ -1,7 +1,9 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/errors');
 const {
-  ERROR_CODE, NOT_FOUND_CODE, INTERNAL_SERVER_ERROR,
+  ERROR_CODE,
+  NOT_FOUND_CODE,
+  INTERNAL_SERVER_ERROR,
 } = require('../errors/ErrorStatus');
 
 module.exports.getCards = (req, res) => {
