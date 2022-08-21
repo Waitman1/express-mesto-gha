@@ -4,9 +4,13 @@
   "homepage": "https://waitman1.github.io/react-mesto-auth/",
   "main": "app.js",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
+    "celebrate": "^15.0.1",
     "express": "^4.18.1",
-    "mongoose": "^6.5.0"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.0",
+    "validator": "^13.7.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,7 +18,6 @@
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-
   "devDependencies": {
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
