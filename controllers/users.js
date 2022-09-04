@@ -1,10 +1,13 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/notFound');
 const BadRequest = require('../errors/badRequest');
 const Conflicted = require('../errors/conflicted');
-const { CREATED_CODE } = require('../errors/ErrorStatus');
+const {
+  CREATED_CODE,
+} = require('../errors/statusCode');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -48,8 +51,7 @@ module.exports.getThisUserInfo = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  bcrypt
-    .hash(req.body.password, 10)
+  bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       email: req.body.email,
       password: hash,
@@ -71,9 +73,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(new Conflicted('Пользователь уже существует'));
       } else if (err.name === 'ValidationError') {
-        next(
-          new BadRequest('Переданы некорректные данные при создании пользователя пользователя'),
-        );
+        next(new BadRequest('Переданы некорректные данные при создании пользователя пользователя'));
       } else {
         next(err);
       }
@@ -97,11 +97,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(
-          new BadRequest(
-            'Переданы некорректные данные при обновлении пользователя',
-          ),
-        );
+        next(new BadRequest('Переданы некорректные данные при обновлении пользователя'));
       } else {
         next(err);
       }
@@ -136,9 +132,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' });
       return res.send({ token });
     })
     .catch(next);

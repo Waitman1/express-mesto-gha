@@ -1,9 +1,9 @@
-const { ERROR_CODE } = require('./ErrorStatus');
+const { ERROR_CODE } = require('./statusCode');
 
 class BadRequest extends Error {
   constructor(message) {
     super(message);
-    this.ErrorStatus = ERROR_CODE;
+    this.statusCode = ERROR_CODE;
   }
 }
 

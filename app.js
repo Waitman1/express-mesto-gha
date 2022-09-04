@@ -1,22 +1,35 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const { errors, Joi, celebrate } = require('celebrate');
 const users = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 const NotFound = require('./errors/notFound');
-const INTERNAL_SERVER_ERROR = require('./errors/ErrorStatus');
+const INTERNAL_SERVER_ERROR = require('./errors/statusCode');
 const { login, createUser } = require('./controllers/users');
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.json());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
+});
+
+app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
 });
 
 app.post('/signin', celebrate({
@@ -42,6 +55,8 @@ app.use('/cards', cardRouter);
 app.use('*', (req, res, next) => {
   next(new NotFound('Страница не найдена'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
